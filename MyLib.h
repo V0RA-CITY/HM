@@ -1,18 +1,19 @@
 #pragma once
-#include<iostream>
-#include<string>
-#include<vector>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <optional>
 
-using namespace std;
 #undef max
 
 namespace myLib
 {
 	template <typename T>
-	T getUserInput(bool allowZero = false, bool allowNegative = false, bool checkAllinput = false);
+	std::optional<T> getUserInput(std::istream& stream, bool allowZero = false, bool allowNegative = false, bool checkAllinput = false, bool needClearStream = true);
 	std::string getUserInputTxt();
 	char getUserInputKey();
 	unsigned short getUserSelectedTask(unsigned short qtyTask);
+	void clearStream(std::istream& stream);
 
 	template <typename T>
 	void printArr(size_t size, T* Arr);
@@ -24,34 +25,39 @@ namespace myLib
 	template <typename T>
 	void printVect(const std::vector<T>& vec);
 
-	string getNameFileFromUser(unsigned short indexF);
+	std::string getNameFileFromUser(unsigned short indexF);
 }
 
 template <typename T>
-T myLib::getUserInput(bool allowZero, bool allowNegative, bool checkAllinput)
+std::optional<T> myLib::getUserInput(std::istream& stream, bool allowZero, bool allowNegative, bool checkAllinput, bool needClearStream)
 {
 	while (true)
 	{
 		T input;
-		cin >> input;
-		if (cin.fail() || (input < 0) && !allowNegative || (input == 0) && !allowZero)
+		stream >> input;
+		if (stream.fail() || (input < 0) && !allowNegative || (input == 0) && !allowZero)
 		{
-			cout << "Ошибка ввода, повторите ввод: ";
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			std::cout << "Ошибка ввода, повторите ввод: ";
+			stream.clear();
+			stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			return std::nullopt;
 		}
 		else
 		{
-			if ((cin.peek() != cin.widen('\n')) && checkAllinput)
+			if ((stream.peek() != stream.widen('\n')) && checkAllinput)
 			{
-				cout << "Ошибка ввода, повторите ввод: ";
-				cin.clear();
-				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				std::cout << "Ошибка ввода, повторите ввод: ";
+				stream.clear();
+				stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				return std::nullopt;
 			}
 			else
 			{
-				cin.clear();
-				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				if (needClearStream)
+				{
+					stream.clear();
+					stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				}
 				return input;
 			}
 		}
@@ -61,21 +67,21 @@ T myLib::getUserInput(bool allowZero, bool allowNegative, bool checkAllinput)
 template<typename T>
 void myLib::printArr(size_t size, T* Arr)
 {
-	cout << "Кол-во элементов = " << size << endl;
+	std::cout << "Кол-во элементов = " << size << std::endl;
 	for (size_t i = 0; i < size; i++)
 	{
-		cout << Arr[i] << ' ';
+		std::cout << Arr[i] << ' ';
 	}
-	cout << endl;
+	std::cout << std::endl;
 }
 
 template<typename T>
 void myLib::printVect(const std::vector<T>& vec)
 {
-	cout << "Кол-во элементов = " << vec.size() << endl;
+	std::cout << "Кол-во элементов = " << vec.size() << std::endl;
 	for (auto i : vec)
 	{
-		cout << i << ' ';
+		std::cout << i << ' ';
 	}
-	cout << endl;
+	std::cout << std::endl;
 }
