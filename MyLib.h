@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <algorithm>
 
 #undef max
 
@@ -24,6 +25,9 @@ namespace myLib
 
 	template <typename T>
 	void printVect(const std::vector<T>& vec);
+
+	template <typename T>
+	void printContainer(const T& cont);
 
 	std::string getNameFileFromUser(unsigned short indexF);
 }
@@ -83,5 +87,19 @@ void myLib::printVect(const std::vector<T>& vec)
 	{
 		std::cout << i << ' ';
 	}
+	std::cout << std::endl;
+}
+
+template<typename T>
+void myLib::printContainer(const T& cont)
+{
+	const size_t size = cont.size();
+	std::for_each(cont.begin(), cont.end(),
+		[count = 0, &size](const auto& i) mutable
+		{
+			count++;
+			std::cout << i;
+			if (count != size) std::cout << ", ";
+		});
 	std::cout << std::endl;
 }
